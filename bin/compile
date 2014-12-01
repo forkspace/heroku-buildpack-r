@@ -22,6 +22,8 @@ function indent() {
   esac
 }
 
+echo `uname -a`
+
 # clean up leaking environment
 unset GIT_DIR
 
