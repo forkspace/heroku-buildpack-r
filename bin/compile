@@ -49,7 +49,7 @@ echo "copying files to system" | indent
 cp -R $R_BUILD_DIR/* $R_DEPLOY_DIR/
 cp -R $BUILD_DIR/*.r $DEPLOY_DIR/
 cp -R $BUILD_DIR/Procfile $DEPLOY_DIR/
-
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:R_DEPLOY_DIR/lib
 
 # install dependencies from CRAN
 export R_HOME="$R_DEPLOY_DIR/R"
