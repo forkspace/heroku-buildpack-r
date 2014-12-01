@@ -44,17 +44,17 @@ wget --no-check-certificate $R_DOWNLOAD_URI
 tar xjpvf $R_FILE -C $BASE_DIR && rm -f $R_FILE
 
 echo "copying files to system" | indent
-mkdir -p $APP_DIR/opt/R
-cp -R $BASE_DIR/R/* $APP_DIR/opt/R/
+mkdir -p $APP_DIR/R
+cp -R $BASE_DIR/R/* $APP_DIR/R/
 cp -R $BUILD_DIR/*.r $APP_DIR/
 
 
 # install dependencies from CRAN
-export R_HOME="$APP_DIR/opt/R"
+export R_HOME="$APP_DIR/R"
 echo "R_HOME is $R_HOME"
 echo "Executing init.r script" | indent
 # set the CRAN mirror and run the init.r program
-$APP_DIR/opt/R/bin/R -s <<RPROG > indent
+$APP_DIR/R/bin/R -s <<RPROG > indent
   Sys.setenv(BUILD_DIR="$BUILD_DIR")
   setwd("$BUILD_DIR")
   r <- getOption("repos");
@@ -66,4 +66,4 @@ RPROG
 echo "R $R_VERSION successfully installed" | indent
 
 # need to copy binaries back so that any installed packages are included in the slug
-cp -R $APP_DIR/opt/R/* $BASE_DIR/R/
+cp -R $APP_DIR/R/* $BASE_DIR/R/
