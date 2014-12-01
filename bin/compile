@@ -23,7 +23,7 @@ function indent() {
 }
 
 echo `uname -a`
-sudo apt-get install r-base
+apt-get install r-base
 
 # clean up leaking environment
 unset GIT_DIR
