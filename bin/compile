@@ -46,7 +46,7 @@ tar xjpvf $R_FILE -C $BASE_DIR && rm -f $R_FILE
 echo "copying files to system" | indent
 mkdir -p $APP_DIR/opt/R
 cp -R $BASE_DIR/R/* $APP_DIR/opt/R/
-cp -R $BUILD_DIR /*.r $APP_DIR/
+cp -R $BUILD_DIR/*.r $APP_DIR/
 
 
 # install dependencies from CRAN
