@@ -39,7 +39,7 @@ R_DEPLOY_DIR=$DEPLOY_DIR/R
 #1 dir=/tmp/staged/app
 #2 dir=/tmp/cache
 
-mkdir -p R_DEPLOY_DIR
+mkdir -p $R_DEPLOY_DIR
 cd $BUILD_DIR
 echo "Downloading and unpacking R binaries" | indent
 wget --no-check-certificate $R_DOWNLOAD_URI
