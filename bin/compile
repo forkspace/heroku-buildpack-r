@@ -33,7 +33,9 @@ BUILD_DIR=$1
 CACHE_DIR="$2/vendor"
 LP_DIR=`cd $(dirname $0); cd ..; pwd`
 BUILDPACK_DIR="$(dirname $(dirname $0))"
-
+echo "0 dir=$0"
+echo "BUILD_DIR=$BUILD_DIR"
+echo "BUILDPACK_DIR=$BUILDPACK_DIR"
 # config
 R_VERSION="3.0.2"
 BUILD_PACK_VERSION="20131208-1524"
