@@ -51,6 +51,7 @@ cp -R $BUILD_DIR/*.r $APP_DIR/
 
 # install dependencies from CRAN
 export R_HOME="$APP_DIR/opt/R"
+echo "R_HOME is $R_HOME"
 echo "Executing init.r script" | indent
 # set the CRAN mirror and run the init.r program
 $APP_DIR/opt/R/bin/R -s <<RPROG > indent
