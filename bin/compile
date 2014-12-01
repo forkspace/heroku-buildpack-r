@@ -47,6 +47,7 @@ echo "copying files to system" | indent
 mkdir -p $APP_DIR/R
 cp -R $BASE_DIR/R/* $APP_DIR/R/
 cp -R $BUILD_DIR/*.r $APP_DIR/
+cp -R $BUILD_DIR/Procfile $APP_DIR/
 
 
 # install dependencies from CRAN
