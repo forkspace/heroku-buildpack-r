@@ -40,8 +40,8 @@ APP_DIR="/app/"
 mkdir -p $R_DIR
 
 echo "Downloading and unpacking R binaries" | indent
-wget --no-check-certificate $R_DOWNLOAD_URI  -o $CACHE_DIR/$R_FILE
-tar xjpvf $CACHE_DIR/$R_FILE -C $BASE_DIR
+wget --no-check-certificate $R_DOWNLOAD_URI
+tar xjpvf $R_FILE -C $BASE_DIR && rm -f $R_FILE
 
 echo "copying files to system" | indent
 mkdir -p $APP_DIR/opt/R
