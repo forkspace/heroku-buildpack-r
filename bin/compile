@@ -22,90 +22,47 @@ function indent() {
   esac
 }
 
-echo `uname -a`
 
-
-# clean up leaking environment
-unset GIT_DIR
-
-# parse and derive params
+#0 dir=/tmp/buildpacks/heroku-buildpack-r/bin/compile
+#1 dir=/tmp/staged/app
+#2 dir=/tmp/cache
+_PWD=`pwd`
+SYS_UNAME=`uname -a`
 BUILD_DIR=$1
-CACHE_DIR="$2/vendor"
-LP_DIR=`cd $(dirname $0); cd ..; pwd`
+CACHE_DIR=$2
 BUILDPACK_DIR="$(dirname $(dirname $0))"
-echo "0 dir=$0"
-echo "BUILD_DIR=$BUILD_DIR"
-echo "BUILDPACK_DIR=$BUILDPACK_DIR"
-# config
-R_VERSION="3.0.2"
-BUILD_PACK_VERSION="20131208-1524"
+R_FILE=R.tar.bz2
+R_DOWLOAD_URI="https://github.com/jtviegas/filerepo/raw/master/r/R.tar.bz2"
+BASE_DIR=$BUILD_DIR/opt
+R_DIR="$BASE_DIR/R"
+CRAN_MIRROR="http://cran.ma.imperial.ac.uk"
+APP_DIR="/app/"
+mkdir -p $R_DIR
 
-S3_BUCKET="heroku-buildpack-r"
-R_BINARIES="http://${S3_BUCKET}.s3.amazonaws.com/R-${R_VERSION}-binaries-${BUILD_PACK_VERSION}.tar.gz"
-
-VENDOR_DIR="$BUILD_DIR/vendor"
-R_BASE="$VENDOR_DIR/R"
-CRAN_MIRROR="http://cran.revolutionanalytics.com"
-
-mkdir -p $CACHE_DIR
-
-# vendor R into the slug
-echo "Vendoring R $R_VERSION" | indent
-
-# download and unpack binaries
 echo "Downloading and unpacking R binaries" | indent
-mkdir -p $VENDOR_DIR && curl $R_BINARIES -s -o - | tar xzf - -C $VENDOR_DIR
+wget --no-check-certificate $R_DOWNLOAD_URI  -o $CACHE_DIR/$R_FILE
+tar xjpvf $CACHE_DIR/$R_FILE -C $BASE_DIR
 
-# need to copy the binaries to /app/vendor so that R works
-mkdir -p /app/vendor/gcc
-cp -R $VENDOR_DIR/gcc/* /app/vendor/gcc
+echo "copying files to system" | indent
+mkdir -p $APP_DIR/opt/R
+cp -R $BASE_DIR/R/* $APP_DIR/opt/R/
+cp -R $BUILD_DIR /*.r $APP_DIR/
 
-mkdir -p /app/vendor/glibc
-cp -R $VENDOR_DIR/glibc/* /app/vendor/glibc
-
-mkdir -p /app/vendor/gsl
-cp -R $VENDOR_DIR/gsl/* /app/vendor/gsl
-
-mkdir -p /app/vendor/R
-cp -R $VENDOR_DIR/R/* /app/vendor/R
-
-# HACK: need to copy over the gcc libs so that packages can find them
-mkdir -p /app/vendor/R/lib64/R/lib
-cp /app/vendor/gcc/lib64/* /app/vendor/R/lib64/R/lib
-
-# R needs to know where gfortran and glibc header files are
-export PATH="/app/vendor/R/bin:/app/vendor/gcc/bin:$PATH"
-
-export LDFLAGS="-L/app/vendor/gcc/lib64 -L/app/vendor/gsl/lib"
-export CPPFLAGS="-I/app/vendor/glibc/string -I/app/vendor/glibc/time -I/app/vendor/gsl/include"
-export PKG_LDFLAGS=$LDFLAGS
-export PKG_CPPFLAGS=$CPPFLAGS
-
-export R_HOME=$R_BASE/lib64/R
-export R_INCLUDE=$R_HOME/include
-
-# copy over environment
-mkdir -p $BUILD_DIR/.profile.d
-cp "$BUILDPACK_DIR/bin/r_environment.sh" $BUILD_DIR/.profile.d/r_environment.sh
-
-# prevent warnings when building packages
-mkdir -p /app/vendor/R/lib64/R/doc/html
-touch /app/vendor/R/lib64/R/doc/html/R.css
 
 # install dependencies from CRAN
 echo "Executing init.r script" | indent
 
 # set the CRAN mirror and run the init.r program
-/app/vendor/R/bin/R -s <<RPROG > indent
+$APP_DIR/opt/R/bin/R -s <<RPROG > indent
   Sys.setenv(BUILD_DIR="$BUILD_DIR")
   setwd("$BUILD_DIR")
   r <- getOption("repos");
   r["CRAN"] <- "$CRAN_MIRROR";
   options(repos=r);
-  `cat $BUILD_DIR/init.r`
+  `cat $APP_DIR/init.r`
 RPROG
 
 echo "R $R_VERSION successfully installed" | indent
 
 # need to copy binaries back so that any installed packages are included in the slug
-cp -R /app/vendor/R/* $VENDOR_DIR/R
+cp -R $APP_DIR/opt/R/* $BASE_DIR/R/
