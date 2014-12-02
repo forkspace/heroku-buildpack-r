@@ -38,6 +38,7 @@ R_DEPLOY_DIR=$DEPLOY_DIR/R
 #0 dir=/tmp/buildpacks/heroku-buildpack-r/bin/compile
 #1 dir=/tmp/staged/app
 #2 dir=/tmp/cache
+#--enable-R-shlib or --enable-R-static-lib
 
 mkdir -p $R_DEPLOY_DIR
 cd $BUILD_DIR
@@ -52,7 +53,7 @@ cp -R $BUILD_DIR/Procfile $DEPLOY_DIR/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:R_DEPLOY_DIR/lib
 
 # install dependencies from CRAN
-export R_HOME="$R_DEPLOY_DIR/R"
+export R_HOME="$R_DEPLOY_DIR"
 echo "R_HOME is $R_HOME"
 echo "Executing init.r script" | indent
 # set the CRAN mirror and run the init.r program
