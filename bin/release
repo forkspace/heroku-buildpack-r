@@ -2,5 +2,7 @@
 # bin/release <build-dir>
 
 cat <<EOF
---- {}
+--- 
+default_process_types:
+  web: /app/R/bin/R -f /app/loop.r --gui-none --no-save
 EOF
